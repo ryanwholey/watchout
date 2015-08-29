@@ -3,43 +3,43 @@ d3.select('.scoreboard').selectAll('div')
 .style({
   'float':'right',
   'color':'lightskyblue',
-  'font-family':'helvetica',
-  'padding-right':'10px'
-})
+  'font-family':'Quicksand',
+  'text-align' : 'center'
+});
 
 var HEIGHT = 600;
 var WIDTH = 1000;
-var ENNUM = 15;
+var ENNUM = 25;
 
-
+var counterObj = {
+  collision : 0,
+  score : 0,
+  highScore: 0
+};
 
 var svg = d3.select('body')
   .append('svg')
   .attr('class','svg')
-  .style({'height':HEIGHT,'width':WIDTH})
-
-  // .append('g');
+  .style({'height':HEIGHT,'width':WIDTH});
 
 var Enemy = function(x,y,r,img){
   this.x = x;
   this.y = y;
   this.r = r;
   this.image = img;
-}
+};
 
 var enemies = function(n){
   var arr = [];
-  for(var i = 0; i < n; i++){
+  for (var i = 0; i < n; i++) {
     arr.push(new Enemy(
       Math.floor(Math.random()*WIDTH),
       Math.floor(Math.random()*HEIGHT),
       10,
-      'shiruken.png'
-      ));
+      'shiruken.png'));
   }
   return arr;
-}
-
+};
 
 var drag = d3.behavior.drag()
   .on('drag', function(){
@@ -67,13 +67,12 @@ var character = svg.append('circle')
     'r':25,
     'fill':'orange',
     'stroke':'red',
+    'stroke-width': 2,
     'cx':function(d){return d.x},
     'cy':function(d){return d.y},
     'class':'hero'
   })
   .call(drag);
-
-
 
 var enemies = svg.selectAll('image')
   .data(enemies(ENNUM))
@@ -84,57 +83,44 @@ var enemies = svg.selectAll('image')
   .attr('height','30px')
   .attr('class','enemy')
   .attr('x',function(d){return d.x})
-  .attr('y',function(d){return d.y})
+  .attr('y',function(d){return d.y});
 
-  
-  
-
-var update = function(d){
-
+var update = function(d) {
     d3.selectAll('.enemy')
     .attr('fill','blue')
     .transition()
-    .duration(600)
+    .duration(1200)
     .attr('x',function(){return Math.floor(Math.random()*WIDTH)})
-    .attr('y',function(){return Math.floor(Math.random()*HEIGHT)})   
-}
+    .attr('y',function(){return Math.floor(Math.random()*HEIGHT)});   
+};
 
-
-
-setInterval(function(){update()}, 1000);
-var countCollision = 0;
-var score = 0;
-var highScore = 0;
-
-var collision = function(){
-  
-  d3.select('.current').select('span').text(score++);
-  var hp = [+d3.select('.hero').attr('cx'),
+var collision = function() {
+  var ex, ey, er, hp, distance, arr;
+  d3.select('.current').select('span').text(counterObj.score++);
+  hp = [+d3.select('.hero').attr('cx'),
             +d3.select('.hero').attr('cy'),
             +d3.select('.hero').attr('r')];
-  var arr = [];
+  arr = [];
   d3.selectAll('.enemy').each(function(){
-    var ex = d3.select(this).attr('x');
-    var ey = d3.select(this).attr('y');
-    var er = d3.select(this).attr('r');
-    
-    var distance = Math.sqrt((Math.pow(ex - hp[0], 2)) + (Math.pow(ey - hp[1], 2)));
+    ex = d3.select(this).attr('x');
+    ey = d3.select(this).attr('y');
+    er = d3.select(this).attr('r');
+
+    distance = Math.sqrt((Math.pow(ex - hp[0], 2)) + (Math.pow(ey - hp[1], 2)));
     if (distance < 40) {
-      countCollision++;
-      d3.select('.collisions').select('span').text(countCollision);
-      if (score > highScore) {
-        highScore = score;
-        d3.select('.high').select('span').text(highScore);
+      counterObj.collision++;
+      d3.select('.collisions').select('span').text(counterObj.collision);
+
+      if (counterObj.score > counterObj.highScore) {
+        counterObj.highScore = counterObj.score;
+        d3.select('.high').select('span').text(counterObj.highScore);
       }
-      score = 0;
+      counterObj.score = 0;
     }
   });
-}
-
-// collision();
-// console.log(d3.selectAll('.enemy').attr('cx'));
-// setTimeout(collision, 2000);
-setInterval(collision, 39);
+};
+setInterval(function(){update()}, 1000);
+setInterval(collision, 50);
 
 
 
