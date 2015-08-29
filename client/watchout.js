@@ -17,18 +17,25 @@ var svg = d3.select('body')
   .append('svg')
   .attr('class','svg')
   .style({'height':HEIGHT,'width':WIDTH})
-  .append('g');
 
-var Enemy = function(x,y,r){
+  // .append('g');
+
+var Enemy = function(x,y,r,img){
   this.x = x;
   this.y = y;
   this.r = r;
+  this.image = img;
 }
 
 var enemies = function(n){
   var arr = [];
   for(var i = 0; i < n; i++){
-    arr.push(new Enemy(Math.floor(Math.random()*WIDTH),Math.floor(Math.random()*HEIGHT),10));
+    arr.push(new Enemy(
+      Math.floor(Math.random()*WIDTH),
+      Math.floor(Math.random()*HEIGHT),
+      10,
+      'shiruken.png'
+      ));
   }
   return arr;
 }
@@ -68,14 +75,17 @@ var character = svg.append('circle')
 
 
 
-var enemies = svg.selectAll('circle')
+var enemies = svg.selectAll('image')
   .data(enemies(ENNUM))
   .enter()
-  .append('svg:circle')
+  .append('svg:image')
+  .attr('xlink:href',function(d){return d.image})
+  .attr('width','30px')
+  .attr('height','30px')
   .attr('class','enemy')
-  .attr('r',function(d){return d.r})
-  .attr('cx',function(d){return d.x})
-  .attr('cy',function(d){return d.y})
+  .attr('x',function(d){return d.x})
+  .attr('y',function(d){return d.y})
+
   
   
 
@@ -85,8 +95,8 @@ var update = function(d){
     .attr('fill','blue')
     .transition()
     .duration(600)
-    .attr('cx',function(){return Math.floor(Math.random()*WIDTH)})
-    .attr('cy',function(){return Math.floor(Math.random()*HEIGHT)})   
+    .attr('x',function(){return Math.floor(Math.random()*WIDTH)})
+    .attr('y',function(){return Math.floor(Math.random()*HEIGHT)})   
 }
 
 
@@ -104,12 +114,12 @@ var collision = function(){
             +d3.select('.hero').attr('r')];
   var arr = [];
   d3.selectAll('.enemy').each(function(){
-    var ex = d3.select(this).attr('cx');
-    var ey = d3.select(this).attr('cy');
+    var ex = d3.select(this).attr('x');
+    var ey = d3.select(this).attr('y');
     var er = d3.select(this).attr('r');
     
     var distance = Math.sqrt((Math.pow(ex - hp[0], 2)) + (Math.pow(ey - hp[1], 2)));
-    if (distance < 35) {
+    if (distance < 40) {
       countCollision++;
       d3.select('.collisions').select('span').text(countCollision);
       if (score > highScore) {

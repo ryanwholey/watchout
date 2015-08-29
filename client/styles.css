@@ -9,8 +9,8 @@ Feel free to use it if you like. */
   width: 95%;
   padding:20px;
 }
+
 .display{
-   
   padding-top:20px;
 }
 
@@ -20,7 +20,20 @@ Feel free to use it if you like. */
   border-color: #000;
   margin-top: 10%;
   margin-left: 15%;
-  /*width: 1000;
-  height*/
 }
+
+.enemy { 
+  transform-origin: 50% 50% 0;
+  -webkit-animation: spinning .25s infinite linear;
+}
+
+@-webkit-keyframes spinning {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 
